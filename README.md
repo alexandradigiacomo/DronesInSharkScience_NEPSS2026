@@ -1,4 +1,4 @@
-# 🦈 Drones in Shark Science Workshop Repository
+# Drones in Shark Science Workshop Repository
 
 Welcome! This repository supports the **Drones in Shark Science Workshop** held at the **Northeast Pacific Sharks Symposium** at Hatfield Marine Science Center (Oregon State University) on **March 20, 2026**.
 
@@ -10,7 +10,7 @@ This repo is designed as a central hub for:
 
 ---
 
-## 📄 Workshop Resources (Google Doc)
+## Workshop Resources (Google Doc)
 
 All workshop materials, guides, and links are compiled here: **https://docs.google.com/document/d/1olqvJRBeL7Am2XK1a4jWgkj_YfkV9jsua4oOHkMTz_Q/edit?usp=sharing**
 
@@ -35,7 +35,7 @@ The review workflow includes:
 ## 2. Workshop Powerpoint Slides
 Slides from the workshop detailing platform and hardware considerations and taking your data from research question to analysis. These slides include examples from the northeast Pacific of different ecological applications as well as examples of ongoing research. 
 
-## 🚀 Use the Review Code
+## Use the Review Code
 
 Clone the repository:
 
