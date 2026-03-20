@@ -1,0 +1,281 @@
+---
+title: "Drones in Shark Science [NEP Review]"
+output: html_document
+date: "2026-03-14"
+---
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(ggOceanMaps)
+```
+# Load Data
+
+```{r}
+df <- read.csv("NEPReview.csv") %>% 
+  filter(Location != "" & !is.na(Location)) # drop empty rows
+
+df
+```
+
+# Color Mapping
+```{r}
+category_pal <- c(
+  "Behavioral Ecology" = "#ED7D75",
+  "Movement Ecology" = "#F2C56A",
+  "Distribution/Abundance" = "#559FD7",
+  "Individual Traits" = "#82C8A8")
+```
+
+
+# Summary Statistics
+```{r}
+df %>% 
+  count(Region)
+
+df %>% 
+  count(Category)
+```
+
+```{r, fig.height=3, fig.width=4, dpi=150}
+year_counts <- df |>
+  count(Publication.Year)
+
+ggplot(year_counts, aes(x = Publication.Year, y = n)) +
+  geom_col(fill = "steelblue", color = "black", width = 1) +
+  scale_x_continuous(
+    breaks = seq(min(year_counts$Publication.Year),
+                 max(year_counts$Publication.Year), by = 1)) +
+  theme_minimal(base_size = 10) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "publication year",
+    y = "studies (n)") + theme_minimal()
+```
+```{r, fig.height=1.5, fig.width=10, dpi=150}
+# one row. per category (supports multi categories per study)
+df$Category <- as.character(df$Category)
+df_cat <- df %>%
+  separate_rows(Category, sep = ";\\s*") 
+
+# assign levels
+df_cat$Category <- factor(df_cat$Category,
+  levels = c("Behavioral Ecology","Movement Ecology",
+    "Individual Traits","Distribution/Abundance"))
+
+ggplot(df_cat, aes(x = Category, fill = Category)) +
+  geom_bar(color = "black", width = 1.0) +
+  scale_fill_manual(values = category_pal) +
+  labs(x = "ecological domain",
+    y = "studies (n)") + theme_minimal() + 
+  theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
+```
+
+```{r, fig.height=2, fig.width=4, dpi=150}
+df_species <- df %>%
+  separate_rows(Species, sep = ";\\s*")
+
+ggplot(df_species, aes(x = Species)) +
+  geom_bar(color = "black", fill = "steelblue", width = 1) +
+  labs(x = "species",y = "studies (n)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
+```
+```{r, fig.height=2, fig.width=5, dpi=150}
+ggplot(df, aes(x = Region)) +
+  geom_bar(color = "black", fill = "steelblue", width = 1) +
+  labs(x = "region",y = "studies (n)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 0, hjust = 1))
+```
+
+```{r}
+# create analysis methods
+df_ana <- df %>%
+  separate_rows(Analysis, sep = ";\\s*")
+```
+
+# Behavioral Ecology
+```{r, fig.height=4, fig.width=3, dpi=150}
+df_ana %>% 
+  filter(Category == "Behavioral Ecology") %>% 
+  ggplot(aes(x = Analysis)) +
+  geom_bar(color = "black", fill = "#ED7D75", width = 1) +
+  labs(x = "analysis",y = "studies (n)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 20, hjust = 0.8))
+
+df %>% 
+  filter(Category == "Behavioral Ecology") %>% 
+  count()
+
+df_species %>% 
+  filter(Category == "Behavioral Ecology") %>% 
+  select(Species) %>%
+  unique() %>% count()
+```
+# Movement Ecology 
+```{r, fig.height=4, fig.width=3, dpi=150}
+df_ana %>% 
+  filter(Category == "Movement Ecology") %>% 
+  ggplot(aes(x = Analysis)) +
+  geom_bar(color = "black", fill = "#F2C56A", width = 1) +
+  scale_y_continuous(breaks = c(2,4,6), limits = c(0,6)) +
+  labs(x = "analysis", y = "studies (n)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 20, hjust = 0.8))
+
+df %>% 
+  filter(Category == "Movement Ecology") %>% 
+  count()
+
+df_species %>% 
+  filter(Category == "Movement Ecology") %>% 
+  select(Species) %>%
+  unique() %>% count()
+```
+# Individual Traits
+```{r, fig.height=4, fig.width=3, dpi=150}
+df_ana %>% 
+  filter(Category == "Individual Traits") %>% 
+  ggplot(aes(x = Analysis)) +
+  geom_bar(color = "black", fill = "#82C8A8", width = 1) +
+  scale_y_continuous(breaks = c(2,4,6,8,10), limits = c(0,10)) +
+  labs(x = "analysis", y = "studies (n)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 20, hjust = 0.8))
+
+df %>% 
+  filter(Category == "Individual Traits") %>% 
+  count()
+
+df_species %>% 
+  filter(Category == "Individual Traits") %>% 
+  select(Species) %>%
+  unique()
+```
+# Distribution/Abundance
+```{r, fig.height=4, fig.width=3, dpi=150}
+df_ana %>% 
+  filter(Category == "Distribution/Abundance") %>% 
+  ggplot(aes(x = Analysis)) +
+  geom_bar(color = "black", fill = "#559FD7", width = 1) +
+  scale_y_continuous(breaks = c(2,4,6), limits = c(0,6)) +
+  labs(x = "analysis", y = "studies (n)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 20, hjust = 0.8))
+
+df %>% 
+  filter(Category == "Distribution/Abundance") %>% 
+  count()
+
+df_species %>% 
+  filter(Category == "Distribution/Abundance") %>% 
+  select(Species) %>%
+  unique()
+```
+
+
+# Mapping
+```{r, dpi=150}
+df_coords <- df %>%
+  separate_rows(Location, sep = ";") %>%   # split multiple points
+  separate(Location, into = c("lat", "lon"), sep = ",") %>%
+  mutate(lat = as.numeric(trimws(lat)),
+    lon = as.numeric(trimws(lon)))
+
+basemap(limits = c(-145, -100, 20, 57), bathymetry = TRUE) +
+  geom_point(data = df_coords, aes(x = lon, y = lat),
+    shape = 21, fill = "red", color = "black", size = 3) + 
+  xlab("") + ylab("")
+
+```
+
+```{r, dpi=150}
+df_coords_behav <- df_coords %>% 
+  filter(Category == "Behavioral Ecology") 
+
+basemap(limits = c(-140, -105, 20, 57), bathymetry = TRUE) +
+geom_point(data = df_coords_behav, aes(x = lon, y = lat), 
+             shape = 21, fill = "#ED7D75", color = "black", size = 2.5) + 
+  scale_x_continuous(breaks = seq(-140, -100, by = 10)) +
+  xlab("") + ylab("")
+```
+```{r, dpi=150}
+df_coords_mov <- df_coords %>% 
+  filter(Category == "Movement Ecology") 
+
+basemap(limits = c(-140, -105, 20, 57), bathymetry = TRUE) +
+geom_point(data = df_coords_mov, aes(x = lon, y = lat), 
+             shape = 21, fill = "#F2C56A", color = "black", size = 2.5) + 
+  scale_x_continuous(breaks = seq(-140, -100, by = 10)) +
+  xlab("") + ylab("")
+```
+
+```{r, dpi=150}
+df_coords_ind <- df_coords %>% 
+  filter(Category == "Individual Traits") 
+
+basemap(limits = c(-140, -105, 20, 57), bathymetry = TRUE) +
+geom_point(data = df_coords_mov, aes(x = lon, y = lat), 
+             shape = 21, fill = "#82C8A8", color = "black", size = 2.5) + 
+  scale_x_continuous(breaks = seq(-140, -100, by = 10)) +
+  xlab("") + ylab("")
+```
+```{r, dpi=150}
+df_coords_ind <- df_coords %>% 
+  filter(Category == "Distribution/Abundance") 
+
+basemap(limits = c(-140, -105, 20, 57), bathymetry = TRUE) +
+geom_point(data = df_coords_mov, aes(x = lon, y = lat), 
+             shape = 21, fill = "#559FD7", color = "black", size = 2.5) + 
+  scale_x_continuous(breaks = seq(-140, -100, by = 10)) +
+  xlab("") + ylab("")
+```
+
+
+# All area basemap
+
+```{r, fig.height = 4, fig.width= 10, dpi=300}
+basemap(limits = c(-178, -105, 15, 50), bathymetry = TRUE, 
+        bathy.style = "raster_continuous_blues") +
+  #geom_point(data = df_pat, aes(y = `Most Likely Latitude`, x = `Most Likely Longitude`), 
+             #shape = 21, fill = "white", color = "black", size = 2, alpha=0.1) + 
+  xlab("") + ylab("") + 
+  theme(panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank())
+```
+
+```{r, fig.height = 6, fig.width = 6, dpi=300}
+library(terra)        
+
+site_points <- tibble(
+  name = c("Ano Nuevo Island", "Marina State Beach", "New Brighton State Beach"),
+  lon  = c(-122.33775, -121.80890, -121.93579),
+  lat  = c(37.10856,   36.69848,    36.97856))
+
+# import custom bathymetry
+bathy <- rast("etopo_bedrock.tiff")
+bathy <- crop(bathy, ext(-122.5, -121.4, 36.5, 37.5))
+bathy[bathy >= -7] <- NA
+bathy_df <- as.data.frame(bathy, xy = TRUE, na.rm = TRUE)
+colnames(bathy_df)[3] <- "depth"
+
+# plot
+basemap(limits = c(-122.5, -121.4, 36.5, 37.5),
+        bathymetry = FALSE) +
+  geom_tile(data = bathy_df,
+            aes(x = x, y = y, fill = depth)) +
+  scale_fill_gradientn(
+    colours = rev(RColorBrewer::brewer.pal(11, "Blues")),
+    name = "Depth (m)",
+    na.value = NA) +
+  geom_point(data = site_points,
+             aes(x = lon, y = lat),
+             shape = 21, fill = "red", color = "black",
+             size = 6, alpha = 0.5) +
+  geom_text(data = site_points,
+            aes(x = lon, y = lat, label = name),
+            vjust = -1.5, hjust = -0.1, size = 3) +
+  theme(panel.grid = element_blank())
+```
+
