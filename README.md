@@ -25,16 +25,14 @@ This shared document includes:
 
 ## Repository Contents
 
-### 1. PRISMA Review Code 
-review/ 
+### 1. PRISMA Review Code (/review)
 This repository includes code to reproduce a **PRISMA-style systematic review** of studies using drones to study sharks and rays in the **Northeast Pacific**, on studies before March 10, 2026.
 
 The review workflow includes:
 - Literature search compilation
 - Data visualization and mapping of results
 
-## 2. Workshop Powerpoint Slides
-presentation/
+## 2. Workshop Powerpoint Slides (/presentation)
 Slides from the workshop detailing platform and hardware considerations and taking your data from research question to analysis. These slides include examples from the northeast Pacific of different ecological applications as well as examples of ongoing research. 
 
 ## Use the Review Code
